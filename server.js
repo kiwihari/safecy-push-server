@@ -52,10 +52,126 @@ app.post('/api/send-notification', async (req, res) => {
     }
 });
 
+app.post("/api/send-location", async (req, res) => {
+    const { token, lat, lng } = req.body;
+
+    console.log(`Received location: ${lat},${lng}`);
+    console.log(`Token: ${token}`);
+
+    // Build FCM message
+    const message = {
+        token: token,
+        notification: {
+            title: "Location Received",
+            body: `Lat: ${lat}, Lng: ${lng}`,
+        },
+        data: {
+            lat: String(lat),
+            lng: String(lng),
+            type: "location-test",
+        },
+    };
+
+    try {
+        const response = await admin.messaging().send(message);
+        console.log('Location Notification sent');
+        res.status(200).send(`Notification sent: ${response}`);
+    } catch (err) {
+        console.error("Push error:", err.response?.data || err.message);
+        res.status(500).json({ success: false, error: "Push failed" });
+    }
+});
+
+const haversineDistance = (lat1, lon1, lat2, lon2) => {
+    const toRad = (deg) => (deg * Math.PI) / 180;
+
+    const R = 6371; // Earth radius in km
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) *
+        Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // distance in km
+};
+
+app.post("/api/send-warning", async (req, res) => {
+    try {
+        const { token, lat, lng } = req.body;
+
+        if (!token || !lat || !lng) {
+            return res.status(400).json({ error: "token, lat, and lng are required" });
+        }
+
+        console.log(`Received location: ${lat},${lng}`);
+        console.log(`Token: ${token}`);
+
+        // 🎯 Impacted area (example: 37.4219, -122.084 near Google HQ)
+        const targetLat = 37.4219983;
+        const targetLng = -122.084;
+        const radiusKm = 5; // 5 km radius
+
+        const distance = haversineDistance(
+            Number(lat),
+            Number(lng),
+            targetLat,
+            targetLng
+        );
+
+        console.log(`Distance from target = ${distance.toFixed(2)} km`);
+
+        if (distance <= radiusKm) {
+            // User inside impacted area → send notification
+            const message = {
+                token: token,
+                notification: {
+                    title: "Alert: Impacted Area",
+                    body: `You are within ${radiusKm} km of the impacted area.`,
+                },
+                data: {
+                    lat: String(lat),
+                    lng: String(lng),
+                    type: "area-alert",
+                    targetLat: String(targetLat),
+                    targetLng: String(targetLng),
+                    radiusKm: String(radiusKm),
+                },
+            };
+
+            const response = await admin.messaging().send(message);
+            console.log("Alert Notification sent:", response);
+
+            return res.status(200).json({
+                success: true,
+                insideArea: true,
+                distanceKm: distance,
+                messageId: response,
+            });
+        } else {
+            console.log("User outside impacted area, no notification sent.");
+            return res.status(200).json({
+                success: true,
+                insideArea: false,
+                distanceKm: distance,
+                message: "User is outside impacted area.",
+            });
+        }
+    } catch (err) {
+        console.error("Push error:", err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 
 // Listen on all network interfaces
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 FCM server listening on port ${PORT}`);
+app.listen(3000, "0.0.0.0", () => {
+    console.log("🚀 Server running on port 3000");
 });
+
 
