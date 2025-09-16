@@ -168,10 +168,8 @@ app.post("/api/send-warning", async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-
-// Listen on all network interfaces
-app.listen(3000, "0.0.0.0", () => {
-    console.log("🚀 Server running on port 3000");
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
 });
 
 
