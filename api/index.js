@@ -26,6 +26,11 @@ app.use((req, res, next) => {
     next();
 });
 
+app.get('/', (req, res) => {
+    console.log('Received GET request');
+    res.status(200).send('Welcome to the Push Server API.');
+});
+
 app.post('/api/send-notification', async (req, res) => {
     const { type, targetLat, targetLng, radiusKm, title, body } = req.body;
     const token = req.headers['fcm-token'];
