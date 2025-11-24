@@ -1,9 +1,11 @@
 import express from "express";
 import admin from "firebase-admin";
+import cors from "cors";
 import serviceAccount from "./service-account.json" with { type: "json" };
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 // Initialize Firebase Admin SDK
 admin.initializeApp({
@@ -36,7 +38,7 @@ app.post("/sendGlobalNotification", async (req, res) => {
 
     try {
         const response = await admin.messaging().send(message);
-        console.log("Notification sent to all devices", response);
+        console.log("Notification sent to all devices");
         res.json({ success: true, response });
     } catch (err) {
         console.error("Error sending notification:", err);
