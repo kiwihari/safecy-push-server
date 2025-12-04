@@ -159,5 +159,6 @@ Invoke-RestMethod -Uri "http://localhost:3000/sendGlobalNotification" `
 
 ## See Also
 
-- [Mobile App Documentation](../ccdExp/docs/FCM_NOTIFICATION_LOCALIZATION.md)
-- [Android Architecture](../ccdExp/docs/ANDROID_ARCHITECTURE.md)
+For mobile app implementation details, see the SafeCY mobile app repository documentation:
+- `docs/FCM_NOTIFICATION_LOCALIZATION.md` - Bilingual notification setup
+- `docs/ANDROID_ARCHITECTURE.md` - Native Android architecture
