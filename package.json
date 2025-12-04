@@ -1,8 +1,12 @@
 {
   "name": "safecy-push-notifications",
   "version": "1.0.0",
+  "type": "module",
   "main": "index.js",
   "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod",
+    "start": "node subscription-server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

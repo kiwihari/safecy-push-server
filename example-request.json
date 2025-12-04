@@ -1,0 +1,10 @@
+{
+  "title_en": "FIRE ALERT",
+  "title_el": "ΣΥΝΑΓΕΡΜΟΣ ΦΩΤΙΑΣ",
+  "body_en": "Fire reported near Limassol city center. Seek shelter immediately.",
+  "body_el": "Πυρκαγιά αναφέρθηκε κοντά στο κέντρο της Λεμεσού. Αναζητήστε καταφύγιο αμέσως.",
+  "type": "emergency",
+  "targetLat": "34.6851",
+  "targetLng": "33.0443",
+  "radiusKm": "5.0"
+}

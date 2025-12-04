@@ -12,10 +12,10 @@ admin.initializeApp({
 
 // Endpoint to send notification to all devices
 app.post("/sendGlobalNotification", async (req, res) => {
-    const { title, body, type, targetLat, targetLng, radiusKm } = req.body;
+    const { title_en, title_el, body_en, body_el, type, targetLat, targetLng, radiusKm } = req.body;
 
-    if (!title || !body) {
-        return res.status(400).json({ error: "title and body are required" });
+    if (!title_en || !title_el || !body_en || !body_el) {
+        return res.status(400).json({ error: "title_en, title_el, body_en, and body_el are required" });
     }
 
     const timestamp = new Date().toISOString();
@@ -24,14 +24,27 @@ app.post("/sendGlobalNotification", async (req, res) => {
     const message = {
         topic: "all_devices",
         data: {
-            title: title || 'Default Title',
-            body: `${body}.... Latitude value is ${targetLat} , Longitude value is ${targetLng} , Radius is ${radiusKm} and type is ${type}`,
+            // Bilingual support
+            title_en: title_en,
+            title_el: title_el,
+            body_en: body_en,
+            body_el: body_el,
+
+            // Location and metadata
             targetLat: targetLat.toString(),
             targetLng: targetLng.toString(),
             radiusKm: radiusKm.toString(),
             type: type,
             timestamp,
         },
+        android: {
+            priority: "high"
+        },
+        apns: {
+            headers: {
+                "apns-priority": "10"
+            }
+        }
     };
 
     try {
